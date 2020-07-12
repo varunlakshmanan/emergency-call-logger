@@ -2,15 +2,12 @@ import speech_recognition as sr
 from transformers import pipeline
 
 
-def speech_to_text(audio_file_path):
+def speech_to_text(audio_file):
     recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_file_path) as audio_source:
+    with sr.AudioFile(audio_file) as audio_source:
         audio = recognizer.listen(audio_source)
-        try:
-            transcript = recognizer.recognize_google(audio)
-            return transcript
-        except:
-            return "Google Web Speech API not accessible"
+        transcript = recognizer.recognize_google(audio)
+        return transcript
 
 
 def extract_information(transcript):
@@ -35,3 +32,12 @@ def extract_information(transcript):
     urgency = urgency_extractor(transcript)[0]
 
     return names, locations, organizations, summary, urgency
+
+
+def parse_speech(audio_file):
+    try:
+        transcript = speech_to_text(audio_file)
+        names, locations, organizations, summary, urgency = extract_information(transcript)
+        return transcript, names, locations, organizations, summary, urgency
+    except:
+        return None, None, None, None, None, None

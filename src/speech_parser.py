@@ -11,7 +11,7 @@ def speech_to_text(audio_file):
 
 
 def extract_information(transcript):
-    name_location_organization_extractor = pipeline("ner")
+    name_location_organization_extractor = pipeline('ner')
     names_locations_organizations = name_location_organization_extractor(transcript)
     names = []
     locations = []
@@ -25,10 +25,10 @@ def extract_information(transcript):
             elif entry['entity'] == 'B-ORG' or entry['entity'] == 'I-ORG':
                 organizations.append(entry['word'])
 
-    summary_extractor = pipeline("summarization")
+    summary_extractor = pipeline('summarization')
     summary = summary_extractor(transcript, max_length=100)
 
-    urgency_extractor = pipeline("sentiment-analysis")
+    urgency_extractor = pipeline('sentiment-analysis')
     urgency = urgency_extractor(transcript)[0]
 
     return names, locations, organizations, summary, urgency
@@ -39,5 +39,11 @@ def parse_speech(audio_file):
         transcript = speech_to_text(audio_file)
         names, locations, organizations, summary, urgency = extract_information(transcript)
         return transcript, names, locations, organizations, summary, urgency
+    except sr.RequestError:
+        return 'RequestError', None, None, None, None, None
+    except sr.UnknownValueError:
+        return 'UnknownValueError', None, None, None, None, None
+    except ValueError:
+        return 'ValueError', None, None, None, None, None
     except:
-        return None, None, None, None, None, None
+        return 'UnknownError', None, None, None, None, None
